@@ -1,8 +1,8 @@
 # Todo List
 
-## Microservices Version
+## Micro services Version
 
-Application web réalisée avec Node.js et Express.js sur la base d'une architecture microservices
+Application web réalisée avec Node.js et Express.js sur la base d'une architecture micro services
 
 ---
 
