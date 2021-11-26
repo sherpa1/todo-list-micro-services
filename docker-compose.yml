@@ -1,0 +1,45 @@
+services:
+
+  ms_app:
+    container_name: ms_app
+    image: node:lts
+    working_dir: /usr/src/app
+    volumes:
+      - ./app:/usr/src/app
+    #command: npm start
+    command: npm run dev #hot reloading (for development only)
+    env_file: ./app/.env
+    ports:
+      - 3333:3000
+    depends_on:
+      - ms_db
+    links:
+      - ms_db
+    networks:
+      - ms
+
+  ms_db:
+    container_name: ms_db
+    image: mariadb:latest
+    volumes:
+        - ./db/data:/var/lib/mysql
+        - ./db/scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql
+        - ./db/scripts/data.sql:/docker-entrypoint-initdb.d/2.sql
+    env_file: ./db/.env
+    networks:
+      - ms
+
+  ms_adminer:
+    container_name: ms_adminer
+    image: adminer
+    ports:
+      - 8181:8080
+    depends_on:
+      - ms_db
+    networks:
+      - ms
+
+networks:
+  ms:
+    driver: bridge
+
