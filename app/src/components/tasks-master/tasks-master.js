@@ -1,42 +1,21 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
-const api = axios.create({
-    baseURL: 'http://localhost:3333/'
-});
+import { format_date, format_status, edit_link, delete_link, read_link, create_link } from '../../utils/tasks';
 
-function format_date(created_at) {
-    return created_at.toLocaleString('fr-FR');
-}
+import api from '../../utils/api_client';
 
-function format_status(status) {
-    return (status
-        === 1) ? "Done" : "To do";
-}
-
-function edit_link(uuid) {
-    return <a class="button" href={`/tasks/${uuid}/edit`}>Edit</a>;
-}
-
-function delete_link(uuid) {
-    return <a class="button button-red" href={`/tasks/${uuid}/delete`}>Delete</a>;
-}
-
-function read_link(uuid) {
-    return <a class="button" href={`/tasks/${uuid}`}>Show</a>;
-}
-
-function Master() {
+function Master(props) {
     const [tasks, setTasks] = useState([]);
+
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
 
         const load_tasks = async () => {
 
             try {
-                const result = await api.get('tasks');
+                const result = await api.get('tasks', { params: { direction: props.direction } });
                 setTasks(result.data.items);
-
             } catch (error) {
 
                 console.error(error);
@@ -44,33 +23,45 @@ function Master() {
         };
 
         load_tasks();
-    });
+    }, [props.direction]);
 
     return (
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Task</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                    <th>Show</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                {tasks.map(item =>
+        <section>
+            <h2>Tasks</h2>
+            <div>
+                {
+                    (message !== '') ?
+                        <p class="flash_message">{message}</p> : null
+                }
+            </div>
+            {create_link()}
+            <table>
+                <thead>
                     <tr>
-                        <td>{format_date(item.created_at)}</td>
-                        <td>{item.content}</td>
-                        <td>{format_status(item.status)}</td>
-                        <td>{item.status ? delete_link(item.uuid) : edit_link(item.uuid)}</td>
-                        <td>{read_link(item.uuid)}</td>
+                        <th>Date</th>
+                        <th>Task</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        <th>Show</th>
                     </tr>
-                )}
+                </thead>
+                <tbody>
 
-            </tbody>
-        </table>
+                    {tasks.map(item =>
+                        <tr key={item.uuid}>
+                            <td>{format_date(item.created_at)}</td>
+                            <td>{item.content}</td>
+                            <td>{format_status(item.status)}</td>
+                            <td>{item.status ? delete_link(item.uuid) : edit_link(item.uuid)}</td>
+                            <td>{read_link(item.uuid)}</td>
+                        </tr>
+                    )}
+
+                </tbody>
+            </table>
+
+
+        </section>
     );
 }
 

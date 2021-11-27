@@ -31,12 +31,16 @@ async function create(data) {
 
 }
 
-async function read(uuid) {
+async function read(uuid, query) {
 
     try {
 
         if (uuid === undefined) {//read all
-            const items = await Knex(TABLE).select('*').orderBy('created_at', 'desc');
+
+            const direction = (query.direction === 'asc') ? 'asc' : 'desc';
+
+
+            const items = await Knex(TABLE).select('*').orderBy('created_at', direction);
             return items;
         } else {//read one
             const item = await Knex(TABLE).select('*').where('uuid', uuid).first();

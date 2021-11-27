@@ -8,7 +8,7 @@ router.get('/', async (req, res, next) => {
     let items;
 
     try {
-        items = await controller.read();
+        items = await controller.read(undefined, req.query);
         res.json({ items });
     } catch (error) {
         next(error);
@@ -63,7 +63,7 @@ router.put('/:uuid', async (req, res, next) => {
 
     try {
         await controller.update(req.params.uuid, req.body);
-        res.status(200).json();
+        res.status(200).json(req.body);
     } catch (error) {
         error.status = 400;
         next(error);
