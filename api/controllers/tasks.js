@@ -33,7 +33,6 @@ async function create(data) {
 
 async function read(uuid) {
 
-
     try {
 
         if (uuid === undefined) {//read all

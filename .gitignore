@@ -1,5 +1,8 @@
 app/node_modules
-app/.env
+
+api/node_modules
+api/.env
 
 db/data
 db/.env
+

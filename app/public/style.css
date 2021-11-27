@@ -1,0 +1,65 @@
+/* Custom color */
+.button-red {
+    background-color: #ff3300;
+    border-color: #ff3300;
+}
+
+.button-red.button-clear,
+.button-red.button-outline {
+    background-color: transparent;
+    color: #ff3300;
+}
+
+.button-red.button-clear {
+    border-color: transparent;
+}
+
+/* Custom color */
+.button-blue {
+    background-color: #009acd;
+    border-color: #009acd;
+}
+
+.button-blue.button-clear,
+.button-blue.button-outline {
+    background-color: transparent;
+    color: #009acd;
+}
+
+.button-blue.button-clear {
+    border-color: transparent;
+}
+
+/* Custom color */
+.button-green {
+    background-color: #40c057;
+    border-color: #40c057;
+}
+
+.button-green.button-clear,
+.button-green.button-outline {
+    background-color: transparent;
+    color: #40c057;
+}
+
+.button-green.button-clear {
+    border-color: transparent;
+}
+
+.flash_message{
+    padding:1em;
+    background-color: #5c3566;
+    text-align: center;
+    color:white;
+    font-weight: bold;
+    border-radius: 0.3em;
+    font-size:1em;
+}
+
+.subtitle{
+    font-size: 3rem;
+}
+
+h2{
+    color: #5c3566;
+}
