@@ -1,40 +1,72 @@
 import React, { useState, useEffect } from 'react';
 
-import { format_date, format_status, edit_link, delete_link, read_link, create_link } from '../../utils/tasks';
+
+import {
+    useSearchParams
+} from "react-router-dom";
+
+
+import { format_date, format_status } from '../../helpers/tasks';
+import { CreateLink, ReadLink, DeleteButton, EditLink } from '../tasks-buttons/tasks-buttons';
 
 import api from '../../utils/api_client';
 
 function Master(props) {
     const [tasks, setTasks] = useState([]);
+    const [direction, setDirection] = useState('desc');
 
-    const [message, setMessage] = useState('');
+
+    const [searchParams] = useSearchParams();//= query strings
+
+    const task_created = searchParams.get('c');//get "c" query string value
+    const task_deleted = searchParams.get('d');//get "d" query string value
+
+    const [flash_message, setFlashMessage] = useState('');
+
+    const load_tasks = async () => {
+
+        try {
+            const result = await api.get('tasks', { params: { direction: direction } });
+            setTasks(result.data.items);
+        } catch (error) {
+
+            console.error(error);
+        }
+    };
+
+    const delete_task = async (uuid) => {
+
+        try {
+            const result = await api.delete(`tasks/${uuid}`);
+
+            if (result.status === 200) {
+                setFlashMessage(`Task has been deleted`);
+                await load_tasks();
+            } else {
+                alert(`Task has not been deleted`);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
-
-        const load_tasks = async () => {
-
-            try {
-                const result = await api.get('tasks', { params: { direction: props.direction } });
-                setTasks(result.data.items);
-            } catch (error) {
-
-                console.error(error);
-            }
-        };
+        if (task_created) setFlashMessage('The new task has been created');
+        if (task_deleted) setFlashMessage('The new task has been deleted');
 
         load_tasks();
-    }, [props.direction]);
+    }, [direction]);
 
     return (
         <section>
             <h2>Tasks</h2>
             <div>
                 {
-                    (message !== '') ?
-                        <p class="flash_message">{message}</p> : null
+                    (flash_message !== '') ?
+                        <p class="flash_message">{flash_message}</p> : null
                 }
             </div>
-            {create_link()}
+            <CreateLink />
             <table>
                 <thead>
                     <tr>
@@ -52,14 +84,17 @@ function Master(props) {
                             <td>{format_date(item.created_at)}</td>
                             <td>{item.content}</td>
                             <td>{format_status(item.status)}</td>
-                            <td>{item.status ? delete_link(item.uuid) : edit_link(item.uuid)}</td>
-                            <td>{read_link(item.uuid)}</td>
+                            <td>{item.status ? <DeleteButton uuid={item.uuid} onClick={delete_task} /> : <EditLink uuid={item.uuid} />}</td>
+                            <td><ReadLink uuid={item.uuid} /></td>
                         </tr>
                     )}
 
                 </tbody>
             </table>
 
+            <div>
+                <button onClick={() => (direction === 'asc') ? setDirection('desc') : setDirection('asc')}>Order by date of creation ({(direction === 'asc') ? 'desc' : 'asc'})</button>
+            </div>
 
         </section>
     );

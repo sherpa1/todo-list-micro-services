@@ -1,33 +1,37 @@
 import React, { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import api from '../../utils/api_client';
 
-import { back_link } from "../../utils/tasks";
+import { BackLink } from "../tasks-buttons/tasks-buttons";
 
 function TaskForm(props) {
 
     const [task, setTask] = useState({});
 
-    const [message, setMessage] = useState('');
+
+    const navigate = useNavigate();
+
+    async function back_to_master() {
+        navigate("/tasks?c=1");
+    }
 
     async function handleSubmit(event) {
         event.preventDefault();
         const content = event.target.content.value;
         const status = event.target.status.value;
 
-        const created_task = task;
+        setTask(task);
 
-        created_task.status = status;
-        created_task.content = content;
-
-        let result;
+        task.status = status;
+        task.content = content;
 
         try {
-            result = await api.post(`/tasks`, created_task);
+            const result = await api.post(`/tasks`, task);
 
             if (result.status === 201) {
-                setTask(created_task);
-                setMessage('Task has been successfully created')
+                back_to_master();
             }
 
         } catch (error) {
@@ -39,12 +43,6 @@ function TaskForm(props) {
     return (
         <article className="">
             <h1>New Task</h1>
-            <div>
-                {
-                    (message !== '') ?
-                        <p class="flash_message">{message}</p> : null
-                }
-            </div>
             <form onSubmit={handleSubmit}>
                 <p>
                     <label for="content">
@@ -57,7 +55,7 @@ function TaskForm(props) {
                 <button className="button button-green">Save</button>
             </form>
 
-            {back_link()}
+            <BackLink />
         </article>
     );
 }

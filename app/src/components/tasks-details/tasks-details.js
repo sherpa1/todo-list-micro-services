@@ -4,7 +4,7 @@ import api from '../../utils/api_client';
 
 import { useParams } from "react-router-dom";
 
-import { back_link } from "../../utils/tasks";
+import { BackLink } from "../tasks-buttons/tasks-buttons";
 
 function TaskDetails(props) {
 
@@ -19,7 +19,7 @@ function TaskDetails(props) {
         const load_task = async () => {
 
             try {
-                const result = await api.get(`/tasks/${params.uuid}`, { params: { direction: props.direction } });
+                const result = await api.get(`/tasks/${params.uuid}`);
                 setTask(result.data.item);
             } catch (error) {
 
@@ -77,20 +77,18 @@ function TaskDetails(props) {
                     <label for="status">
                         Status
                     </label>
-                    <select name="status">
+                    <select name="status" disabled={task.status === 1}>
                         <option value="1" selected={task.status === 1}>Done</option>
                         <option value="0" selected={task.status === 0}>To do</option>
                     </select>
                 </p>
                 {(task.status === 0) ?
-                    <input type="submit" className="button button-green" value="Update" />
-                    :
-                    <input type="submit" className="button button-red" value="Delete" />
-
+                    <button className="button button-green">Update</button>
+                    : null
                 }
             </form>
 
-            {back_link()}
+            <BackLink />
         </article>
     );
 }
